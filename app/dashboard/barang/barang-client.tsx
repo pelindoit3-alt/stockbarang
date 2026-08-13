@@ -28,6 +28,7 @@ interface Barang {
   satuan: string
   stock: number
   stock_minimum: number
+  harga: number
   is_active: boolean
 }
 
@@ -80,7 +81,7 @@ export default function BarangClient({ initialBarang, kategoriList, userRole }: 
   const emptyForm = {
     nama_barang: '', kategori_id: '', merk: '',
     tipe_spesifikasi: '', satuan: 'Unit',
-    stock: 0, stock_minimum: 0, is_active: true
+    stock: 0, stock_minimum: 0, harga: 0, is_active: true
   }
   const [form, setForm] = useState(emptyForm)
   const [formLoading, setFormLoading] = useState(false)
@@ -129,6 +130,7 @@ export default function BarangClient({ initialBarang, kategoriList, userRole }: 
       satuan: b.satuan,
       stock: b.stock,
       stock_minimum: b.stock_minimum,
+      harga: b.harga || 0,
       is_active: b.is_active,
     })
     setFormError(null)
@@ -565,6 +567,18 @@ export default function BarangClient({ initialBarang, kategoriList, userRole }: 
                       className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition-all"
                     />
                     <p className="text-[10px] text-slate-400">Barang akan berstatus MENIPIS jika stock ≤ nilai ini</p>
+                  </div>
+
+                  {/* Harga */}
+                  <div className="space-y-1.5">
+                    <label className="text-[11px] font-bold text-slate-500">Harga Satuan (Rp) <span className="text-rose-500">*</span></label>
+                    <input
+                      type="number" required min={0}
+                      placeholder="0"
+                      value={form.harga}
+                      onChange={e => setForm(f => ({ ...f, harga: parseInt(e.target.value) || 0 }))}
+                      className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition-all"
+                    />
                   </div>
 
                   {/* Status Aktif */}

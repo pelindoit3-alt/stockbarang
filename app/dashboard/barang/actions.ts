@@ -14,6 +14,7 @@ export interface BarangFormData {
   satuan: string
   stock: number
   stock_minimum: number
+  harga: number
   is_active: boolean
 }
 
@@ -45,6 +46,7 @@ export async function createBarang(formData: BarangFormData) {
         satuan: formData.satuan,
         stock: formData.stock,
         stock_minimum: formData.stock_minimum,
+        harga: formData.harga,
         is_active: formData.is_active,
       })
       .select()
@@ -79,6 +81,7 @@ export async function updateBarang(id: string, formData: BarangFormData) {
         satuan: formData.satuan,
         stock: formData.stock,
         stock_minimum: formData.stock_minimum,
+        harga: formData.harga,
         is_active: formData.is_active,
       })
       .eq('id', id)

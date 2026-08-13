@@ -1,22 +1,15 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
-import BarangClient from './barang-client'
+import StokClient from './stok-client'
 
-export default async function BarangPage() {
+export default async function StokPage() {
   const supabase = await createClient()
 
   // Auth check
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
-  // Get user role
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('id', user.id)
-    .single()
-
-  // Fetch semua barang + join kategori
+  // Fetch all barang with kategori join
   const { data: barang, error: barangError } = await supabase
     .from('barang')
     .select(`
@@ -27,25 +20,21 @@ export default async function BarangPage() {
     `)
     .order('kode_barang', { ascending: true })
 
-  // Fetch semua kategori untuk dropdown
+  // Fetch kategori for dropdown
   const { data: kategori, error: kategoriError } = await supabase
     .from('kategori')
     .select('id, nama')
     .order('nama', { ascending: true })
 
-  // Error state jika tabel belum dibuat
   if (barangError || kategoriError) {
     return (
       <div className="max-w-2xl mx-auto mt-10 p-6 rounded-2xl bg-rose-50 border border-rose-100 text-rose-700">
         <h3 className="font-extrabold text-lg mb-2">⚠️ Tabel Belum Disiapkan</h3>
         <p className="text-sm mb-4 font-medium">
-          Tabel <code className="bg-rose-100 px-1 rounded">barang</code> dan <code className="bg-rose-100 px-1 rounded">kategori</code> belum ada di database.
-          Silakan jalankan script SQL berikut di <strong>Supabase SQL Editor</strong>:
+          Tabel <code className="bg-rose-100 px-1 rounded">barang</code> belum memiliki kolom yang dibutuhkan atau belum disiapkan.
+          Silakan jalankan script SQL migrasi di Supabase SQL Editor.
         </p>
-        <div className="bg-slate-900 text-slate-100 p-4 rounded-xl text-xs font-mono overflow-auto max-h-48">
-          <p>Salin isi file <strong>schema_barang.sql</strong> dan jalankan di Supabase SQL Editor.</p>
-        </div>
-        <p className="text-xs mt-3 text-rose-500 font-semibold">
+        <p className="text-xs text-rose-500">
           Error: {barangError?.message || kategoriError?.message}
         </p>
       </div>
@@ -53,10 +42,9 @@ export default async function BarangPage() {
   }
 
   return (
-    <BarangClient
-      initialBarang={(barang || []) as any}
+    <StokClient
+      barangList={(barang || []) as any}
       kategoriList={kategori || []}
-      userRole={profile?.role || 'staff'}
     />
   )
 }
